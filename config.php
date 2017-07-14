@@ -39,22 +39,17 @@ return [
     'scripts' => [
         'normal' => [
             'shell' => 'php',
-            'file' => base_path('packages/hooks/src/code/scripts/normal.php')
+            'file' => base_path('vendor/gkr/hooks/src/code/scripts/normal.php')
         ],
         'composer' => [
             'shell' => 'php',
-            'file' => base_path('packages/hooks/src/code/scripts/composer.php')
+            'file' => base_path('vendor/gkr/hooks/src/code/scripts/composer.php')
         ]
     ],
     'sites' => [
         'default' => [
             'script' => 'composer',
             'type' => 'gogs'
-        ],
-        'blog' => [
-            'repository' => 'git@git.phpna.com:phpna/blog.git',
-            'checks' => ['token'],
-//            'prefix' => 'sudo -Hu www'
         ]
     ],
     'ips' => [],
