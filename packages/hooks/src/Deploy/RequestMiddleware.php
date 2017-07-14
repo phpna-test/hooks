@@ -1,10 +1,10 @@
 <?php
 
-namespace PHPNa\Hooks\Middleware;
+namespace Gkr\Hooks\Deploy;
 
 use Closure;
 
-class HooksMiddleware
+class RequestMiddleware
 {
     /**
      * Handle an incoming request.

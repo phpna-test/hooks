@@ -1,5 +1,5 @@
 <?php
-namespace PHPNa\Hooks\Contracts;
+namespace Gkr\Hooks\Contracts;
 use Psr\Log\LoggerInterface as Base;
 
 interface LoggerInterface extends Base

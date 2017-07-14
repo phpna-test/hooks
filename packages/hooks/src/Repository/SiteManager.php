@@ -1,15 +1,26 @@
 <?php
-namespace PHPNa\Hooks\Repository;
+namespace Gkr\Hooks\Repository;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Support\Arr;
-use PHPNa\Hooks\Exceptions\DeployErrorException;
+use Gkr\Hooks\Contracts\ManagerInterface;
+use Gkr\Hooks\Deploy\ErrorException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
-class SiteManager
+
+/**
+ * Site manager for multiple sites model
+ * @package Gkr\Hooks\Repository
+ */
+class SiteManager implements ManagerInterface
 {
     protected $config;
     protected $fs;
     protected $config_path;
+
+    /**
+     * The constructor.
+     * @param Config $config
+     */
     public function __construct(Config $config)
     {
         $this->config = $config;
@@ -19,6 +30,11 @@ class SiteManager
             $this->set($this->config->get('hooks.sites'));
         }
     }
+
+    /**
+     * Reset all sites dynamic config
+     * It will delete hooks.yml in storage and create a new from config/hooks.php
+     */
     public function reset()
     {
         if ($this->fs->exists($this->config_path)){
@@ -26,6 +42,12 @@ class SiteManager
         }
         $this->set($this->config->get('hooks.sites'));
     }
+
+    /**
+     * Set a {key,value} config of sites dynamic config
+     * @param array $data
+     * @param null $key
+     */
     public function set($data = [],$key = null)
     {
         if ($key != null){
@@ -40,6 +62,12 @@ class SiteManager
         file_put_contents($this->config_path, Yaml::dump($data,5));
         $this->config->set('hooks.sites',$data);
     }
+
+    /**
+     * Get a config of sites dynamic config
+     * @param null $key
+     * @return mixed
+     */
     public function get($key = null)
     {
         $data = Yaml::parse(file_get_contents($this->config_path));
@@ -47,39 +75,68 @@ class SiteManager
         $key = $key ? ".$key" : '';
         return $this->config->get("hooks.sites$key",[]);
     }
+
+    /**
+     * List all sites & get all sites config
+     * @return array
+     */
     public function all()
     {
         return $this->get();
     }
+
+    /**
+     * Get default site's config which specified in config 'hooks.defaults.site'
+     * @return array
+     */
     public function getDefault()
     {
         $default_site = $this->config->get('hooks.defaults.site','default');
         if (!$this->has($default_site)){
-            throw new DeployErrorException("Default site [{$default_site}] not exits in site manager");
+            throw new ErrorException("Default site [{$default_site}] not exits in site manager");
         }
         return $this->get($default_site);
     }
+
+    /**
+     * Add a new site & config it
+     * @param $name
+     * @param array $site
+     * @return array
+     */
     public function add($name,$site = [])
     {
         if (!is_array($site) || !Arr::accessible($site)){
-            throw new DeployErrorException("Site config must be array");
+            throw new ErrorException("Site config must be array");
         }
         if (key_exists($name,$this->get())){
-            throw new DeployErrorException("Site [{$name}] has be exits in site manager!");
+            throw new ErrorException("Site [{$name}] has be exits in site manager!");
         }
         $this->set($name,$site);
         return $site;
     }
-    public function addMulti($sites = []){
+
+    /**
+     * Add multiple sites
+     * @param array $sites
+     * @return array
+     */
+    public function addMul($sites = []){
         foreach ($sites as $name => $site){
             $this->add($name,$site);
         }
         return $sites;
     }
-    public function del($name)
+
+    /**
+     * Delete a site in dynamic config
+     * @param $name
+     * @return array
+     */
+    public function delete($name)
     {
         if (!key_exists($name,$this->get())){
-            throw new DeployErrorException("Site [{$name}] not exits in site manager!");
+            throw new ErrorException("Site [{$name}] not exits in site manager!");
         }
         $sites = $this->get();
         $delete = $sites[$name];
@@ -87,7 +144,13 @@ class SiteManager
         $this->set($sites);
         return $delete;
     }
-    public function delMulti($names = [])
+
+    /**
+     * Delete multiple sites
+     * @param array $names
+     * @return array
+     */
+    public function delMul($names = [])
     {
         $sites = [];
         foreach ($names as $name){
@@ -95,6 +158,12 @@ class SiteManager
         }
         return $sites;
     }
+
+    /**
+     * determine if a site exits in dynamic config by its name
+     * @param $name
+     * @return bool
+     */
     public function has($name)
     {
         return key_exists($name,$this->get());

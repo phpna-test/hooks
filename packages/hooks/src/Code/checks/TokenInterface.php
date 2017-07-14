@@ -1,5 +1,5 @@
 <?php
-namespace PHPNa\Hooks\Contracts;
+namespace Gkr\Hooks\Code\Checks;
 interface TokenInterface
 {
     public function generateServerToken();

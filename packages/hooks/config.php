@@ -21,27 +21,29 @@ return [
     'queue' => [
         'connection' => [
             'driver'  => 'sqlite',
-            'database' => __DIR__.'/../data/database.sqlite'
+            'database' => base_path('packages/hooks/database.sqlite')
         ],
+        'timeout' => 300,
+        'tries' => 3,
         'driver' => 'sync',
         'table' => 'jobs',
-        'queue' => 'hooks',
-        'retry_after' => 60,
+        'queue' => 'default',
+        'retry_after' => 310,
     ],
     'checks' => [
-        'token' => PHPNa\Hooks\Checks\TokenCheck::class
+        'token' => Gkr\Hooks\Code\Checks\TokenCheck::class
     ],
     'types' => [
-        'gogs' => PHPNa\Hooks\Types\Gogs::class
+        'gogs' => Gkr\Hooks\Code\Types\Gogs::class
     ],
     'scripts' => [
         'normal' => [
             'shell' => 'php',
-            'file' => base_path('packages/hooks/src/Scripts/normal.php')
+            'file' => base_path('packages/hooks/src/code/scripts/normal.php')
         ],
         'composer' => [
             'shell' => 'php',
-            'file' => base_path('packages/hooks/src/Scripts/composer.php')
+            'file' => base_path('packages/hooks/src/code/scripts/composer.php')
         ]
     ],
     'sites' => [

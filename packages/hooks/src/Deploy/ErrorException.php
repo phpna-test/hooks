@@ -1,6 +1,6 @@
 <?php
-namespace PHPNa\Hooks\Exceptions;
-class DeployErrorException extends \RuntimeException
+namespace Gkr\Hooks\Deploy;
+class ErrorException extends \RuntimeException
 {
     private static $site = null;
     public static function setSite($site)

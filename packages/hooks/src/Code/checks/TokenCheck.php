@@ -1,7 +1,6 @@
 <?php
-namespace PHPNa\Hooks\Checks;
-use PHPNa\Hooks\Contracts\TokenInterface;
-use PHPNa\Hooks\Exceptions\DeployErrorException;
+namespace Gkr\Hooks\Code\Checks;
+use Gkr\Hooks\Deploy\ErrorException;
 
 class TokenCheck
 {
@@ -10,6 +9,6 @@ class TokenCheck
         if ($deploy->generateServerToken() == $deploy->generateServerToken()){
             return true;
         }
-        throw new DeployErrorException("Server token not equal client token!");
+        throw new ErrorException("Server token not equal client token!");
     }
 }

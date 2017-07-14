@@ -1,5 +1,5 @@
 <?php
-namespace PHPNa\Hooks\Types;
+namespace Gkr\Hooks\Code\Types;
 abstract class BaseType
 {
     protected $config;

@@ -1,26 +1,44 @@
 <?php
-namespace PHPNa\Hooks\Repository;
+namespace Gkr\Hooks\Deploy;
 
 use Illuminate\Support\Arr;
-use PHPNa\Hooks\Exceptions\DeployErrorException;
-use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Process as Shell;
 
-class Deploy
+/**
+ * Hooks deploy class
+ * @package Gkr\Hooks\Deploy
+ */
+class Process
 {
+    /**
+     * @var array
+     */
     protected $config = [];
-    protected $site_data;
-    protected $deploy_type;
+    /**
+     * @var array
+     */
+    protected $site_data = [];
+
+    /**
+     * The constructor.
+     * @param $site_data
+     * @param $config
+     */
     public function __construct($site_data,$config)
     {
         $this->config = $config;
         $this->site_data = $site_data;
     }
+
+    /**
+     * Execute deploy command
+     */
     public function execute()
     {
         $deploy_class = $this->site_data['type']['class'];
         $deploy = new $deploy_class($this->site_data);
         if ($this->check($deploy)){
-            $process = new Process($this->getCommand());
+            $process = new Shell($this->getCommand());
             $process->start();
             $process->wait(function ($type, $buffer) {
                 app('hooks.log')->info("Site [{$this->site_data['name']}] Deploy:".PHP_EOL.$buffer);
@@ -28,6 +46,12 @@ class Deploy
             $process->stop();
         }
     }
+
+    /**
+     * Check client info like token or ip...
+     * @param $deploy
+     * @return bool
+     */
     protected function check($deploy)
     {
         $result = true;
@@ -39,16 +63,21 @@ class Deploy
         }
         return $result;
     }
+
+    /**
+     * Generate the deploy command
+     * @return string
+     */
     protected function getCommand()
     {
         $file = $this->site_data['script']['file'];
         $shell = $this->site_data['script']['shell'];
         $shellMethod = "exec".strtoupper($shell);
         if (!method_exists(get_class($this), $shellMethod)) {
-            throw new DeployErrorException("Script shell of [{$shell}] has not implement");
+            throw new ErrorException("Script shell of [{$shell}] has not implement");
         }
         $commands[] = isset($this->site_data['prefix']) ? [$this->site_data['prefix']] : [];
-        $commands[] = $this->site_data['cloned'] ? [
+        $commands[] = $this->site_data['clone'] ? [
             "cd {$this->config['paths']['web']}",
             "git clone {$this->site_data['repository']} {$this->site_data['name']}",
         ] : [
@@ -59,6 +88,11 @@ class Deploy
         return implode(" && ",$commands);
     }
 
+    /**
+     * Execute php type shell
+     * @param $file
+     * @return string
+     */
     protected function execPHP($file)
     {
         $php_cmd = $this->config['bins']['php'] ?: 'php';

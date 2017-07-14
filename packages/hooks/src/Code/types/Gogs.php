@@ -1,7 +1,7 @@
 <?php
-namespace PHPNa\Hooks\Types;
+namespace Gkr\Hooks\Code\Types;
 
-use PHPNa\Hooks\Contracts\TokenInterface;
+use Gkr\Hooks\Code\Checks\TokenInterface;
 
 class Gogs extends BaseType implements TokenInterface
 {
