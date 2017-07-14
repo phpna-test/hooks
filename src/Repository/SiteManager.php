@@ -25,8 +25,8 @@ class SiteManager implements ManagerInterface
     {
         $this->config = $config;
         $this->fs = new Filesystem();
-        if (!$this->config->get('hooks.single')){
-            $this->config_path = storage_path('app/hooks.yml');
+        $this->config_path = storage_path('app/hooks.yml');
+        if (!$this->config->get('hooks.single') && !$this->fs->exists($this->config_path)){
             $this->set($this->config->get('hooks.sites'));
         }
     }
@@ -55,12 +55,27 @@ class SiteManager implements ManagerInterface
             Arr::set($sites,$key,$data);
             $data = $sites;
         }else{
-            foreach ($data as $name => $config){
-                $data[$name]['name'] = $name;
-            }
+            $data = $this->getInitSites($data);
         }
         file_put_contents($this->config_path, Yaml::dump($data,5));
         $this->config->set('hooks.sites',$data);
+    }
+
+    protected function getInitSites($data = [])
+    {
+        $sites = [];
+        foreach ($data as $name => $config){
+            $sites[$name] = [];
+            $sites[$name]['name'] = $name;
+            $sites[$name]['type'] = isset($config['type']) ?
+                $config['type'] : $this->config->get('hooks.default.type');
+            $sites[$name]['script'] = isset($config['script']) ?
+                $config['script'] : $this->config->get('hooks.default.script');
+            $sites[$name]['checks'] = isset($config['checks']) ? $config['checks'] : [];
+            $sites[$name]['prefix'] = isset($config['prefix']) ? $config['prefix'] : null;
+            $sites[$name]['repository'] = isset($config['repository']) ? $config['repository'] : null;
+        }
+        return $sites;
     }
 
     /**
@@ -112,7 +127,7 @@ class SiteManager implements ManagerInterface
         if (key_exists($name,$this->get())){
             throw new ErrorException("Site [{$name}] has be exits in site manager!");
         }
-        $this->set($name,$site);
+        $this->set($site,$name);
         return $site;
     }
 
@@ -154,7 +169,7 @@ class SiteManager implements ManagerInterface
     {
         $sites = [];
         foreach ($names as $name){
-            $sites[] = $this->del($name);
+            $sites[] = $this->delete($name);
         }
         return $sites;
     }

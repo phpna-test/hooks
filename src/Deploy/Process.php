@@ -1,6 +1,7 @@
 <?php
 namespace Gkr\Hooks\Deploy;
 
+use Gkr\Hooks\Contracts\LoggerInterface;
 use Illuminate\Support\Arr;
 use Symfony\Component\Process\Process as Shell;
 
@@ -10,6 +11,11 @@ use Symfony\Component\Process\Process as Shell;
  */
 class Process
 {
+    /**
+     * The hooks logger instance
+     * @var LoggerInterface
+     */
+    protected $logger;
     /**
      * @var array
      */
@@ -23,11 +29,13 @@ class Process
      * The constructor.
      * @param $site_data
      * @param $config
+     * @param LoggerInterface $logger
      */
-    public function __construct($site_data,$config)
+    public function __construct($site_data,$config,LoggerInterface $logger)
     {
         $this->config = $config;
         $this->site_data = $site_data;
+        $this->logger = $logger;
     }
 
     /**
@@ -36,14 +44,19 @@ class Process
     public function execute()
     {
         $deploy_class = $this->site_data['type']['class'];
-        $deploy = new $deploy_class($this->site_data);
+        $deploy = new $deploy_class($this->site_data,$this->logger);
         if ($this->check($deploy)){
+            $message = "Site [{$this->site_data['name']}] Deploy output info: ".PHP_EOL;
             $process = new Shell($this->getCommand());
+            if (isset($this->config['queue']['timeout'])){
+                $process->setTimeout($this->config['queue']['timeout']);
+            }
             $process->start();
-            $process->wait(function ($type, $buffer) {
-                app('hooks.log')->info("Site [{$this->site_data['name']}] Deploy:".PHP_EOL.$buffer);
+            $process->wait(function ($type, $buffer) use(&$message) {
+                $message .= $buffer.PHP_EOL;
             });
             $process->stop();
+            $this->logger->info($message);
         }
     }
 

@@ -1,9 +1,13 @@
 <?php
 namespace Gkr\Hooks\Providers;
+use Gkr\Hooks\Commands\DeleteCommand;
+use Gkr\Hooks\Commands\MakeCommand;
+use Gkr\Hooks\Commands\ResetCommand;
+use Gkr\Hooks\Commands\ShowCommand;
+use Gkr\Hooks\Deploy\Logger;
 use Illuminate\Support\ServiceProvider;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use Gkr\Hooks\Contracts\HooksInterface;
 use Gkr\Hooks\Contracts\LoggerInterface;
 use Gkr\Hooks\Deploy\ErrorException;
@@ -29,6 +33,7 @@ abstract class BaseServiceProvider extends ServiceProvider
         $this->registerMiddleware();
         if (!$this->app['config']->get('hooks.single')){
             $this->registerRoute();
+            $this->registerCommands();
         }else{
             $this->registerSingleRoute();
         }
@@ -43,6 +48,7 @@ abstract class BaseServiceProvider extends ServiceProvider
                 ->setFormatter(new LineFormatter(null, null, true, true));
             return new Logger('hooks', [$handler]);
         });
+        $this->app->alias(Logger::class, 'hooks.log');
         $this->app->alias(LoggerInterface::class, 'hooks.log');
         $this->app->singleton(HooksInterface::class, function ($app) {
             try {
@@ -82,6 +88,16 @@ abstract class BaseServiceProvider extends ServiceProvider
         $queue_config['queue'] = 'default';
         $this->app['config']->set('queue.connections.hooks', $queue_config);
         $this->app['events']->listen('hooks.deploy', EventListener::class);
+    }
+
+    protected function registerCommands()
+    {
+        $this->commands([
+            MakeCommand::class,
+            ShowCommand::class,
+            DeleteCommand::class,
+            ResetCommand::class
+        ]);
     }
 
     /**

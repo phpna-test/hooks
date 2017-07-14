@@ -7,7 +7,9 @@ class Gogs extends BaseType implements TokenInterface
 {
     public function generateServerToken()
     {
-        return hash_hmac('sha256', $this->config['client']['input'], $this->config['secret'], false);
+        $token = hash_hmac('sha256', $this->config['client']['input'], $this->config['secret'], false);
+        $this->logger->info("token:{$token}");
+        return $token;
     }
 
     public function generateClientToken()

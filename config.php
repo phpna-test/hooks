@@ -1,6 +1,6 @@
 <?php
 return [
-    'single' => true,
+    'single' => env('HOOKS_SINGLE',true),
     'single_site' => [],
     'bins' => [
         'php' => null,

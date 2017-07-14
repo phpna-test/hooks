@@ -8,6 +8,7 @@ use Gkr\Hooks\Deploy\ErrorException;
 use Gkr\Hooks\Deploy\Process;
 use Gkr\Hooks\Repository\SiteConfigTrait;
 use Gkr\Hooks\Repository\SiteManager;
+use Illuminate\Http\Request;
 
 /**
  * Hooks bootstrap class
@@ -26,6 +27,8 @@ class Hooks implements HooksInterface
      * @var array
      */
     protected $config = [];
+
+    protected $request;
     /**
      * Current site name
      * @var string
@@ -48,11 +51,13 @@ class Hooks implements HooksInterface
      * The constructor.
      * @param Container $app
      * @param SiteManager $site_manager
+     * @param Request $request
      */
-    public function __construct(Container $app, SiteManager $site_manager)
+    public function __construct(Container $app, SiteManager $site_manager,Request $request)
     {
         $this->app = $app;
         $this->config = $this->app->make('config')->get('hooks');
+        $this->request = $request;
         $this->site_manager = $site_manager;
         $this->isSingle = isset($this->config['single']) && $this->config['single'];
     }
@@ -98,7 +103,7 @@ class Hooks implements HooksInterface
     {
         try{
             $this->siteData();
-            $deploy = new Process($this->site,$this->config);
+            $deploy = new Process($this->site,$this->config,$this->app['hooks.log']);
             $deploy->execute();
         }catch (ErrorException $e){
             $this->app['hooks.log']->error($e->errorMessage());
