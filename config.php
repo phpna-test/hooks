@@ -15,7 +15,7 @@ return [
         'site' => 'default'
     ],
     'route' => [
-        'prefix' => env('HOOKS_URL','hooks'),
+        'prefix' => env('HOOKS_URL','deploy'),
         'name' => 'hooks'
     ],
     'queue' => [
