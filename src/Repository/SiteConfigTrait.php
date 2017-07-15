@@ -53,15 +53,20 @@ trait SiteConfigTrait
         $site['type'] = Arr::get($site,'type') ?:
             Arr::get($this->config,'defaults.type');
         if (!isset($this->config['types'][$site['type']])) {
-            throw new ErrorException("Deploy Type [{$site['type']}] not exits!");
+            throw new ErrorException("Deploy Type [{$site['type']}] not config!");
         }
-//        if (!class_exists($this->config['types'][$this->site['type']])) {
-//            throw new TypeNotExistsException("Deploy Type {$this->site['type']} not exits!");
-//        }
+        $type_class = $this->config['types'][$this->site['type']];
+        if (!class_exists($type_class)) {
+            throw new ErrorException("Deploy Type class [{$type_class}] not exits!");
+        }
         $site['script'] = Arr::get($site,'script') ?:
             Arr::get($this->config,'defaults.script');
         if (!isset($this->config['scripts'][$site['script']])) {
-            throw new ErrorException("Deploy Script [{$site['script']}] not exits!");
+            throw new ErrorException("Deploy Script [{$site['script']}] not config!");
+        }
+        $script_file = $this->config['scripts'][$site['script']]['file'];
+        if (!file_exists($script_file)) {
+            throw new ErrorException("Deploy script [{$script_file}] file not exists!");
         }
         if (!$this->isSingle){
             $site['path'] = "{$this->config['paths']['web']}/{$site['name']}";

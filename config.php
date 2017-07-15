@@ -31,10 +31,10 @@ return [
         'retry_after' => 310,
     ],
     'checks' => [
-        'token' => \Gkr\Hooks\Code\Checks\TokenCheck::class
+        'token' => Gkr\Hooks\Code\Checks\TokenCheck::class
     ],
     'types' => [
-        'gogs' => \Gkr\Hooks\Code\Types\Gogs::class
+        'gogs' => Gkr\Hooks\Code\Types\Gogs::class
     ],
     'scripts' => [
         'normal' => [
