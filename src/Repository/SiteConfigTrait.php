@@ -91,12 +91,9 @@ trait SiteConfigTrait
      */
     protected function clientData()
     {
-        $data = [
-            'input' => $this->request->all()
-//            'input' => file_get_contents(Arr::get($this->config, 'paths.root') . '/test.json')
-        ];
-        $data['data'] = json_decode($data['input'], true);
-        $data['branch'] = @end(explode('/', $data['data']["ref"]));
+        $data = [];
+        $data['data'] = $this->request->all();
+        $data['branch'] = last(explode('/', $data['data']["ref"]));
         return $data;
     }
 }

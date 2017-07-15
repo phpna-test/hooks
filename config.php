@@ -21,7 +21,7 @@ return [
     'queue' => [
         'connection' => [
             'driver'  => 'sqlite',
-            'database' => base_path('packages/hooks/database.sqlite')
+            'database' => base_path('vendor/gkr/hooks/database.sqlite')
         ],
         'timeout' => 300,
         'tries' => 3,
