@@ -93,7 +93,8 @@ trait SiteConfigTrait
     {
         $data = [];
         $data['data'] = $this->request->all();
-        $this->logger->info($data['data']);
+        dump($data);
+        exit();
         $data['branch'] = last(explode('/', $data['data']["ref"]));
         return $data;
     }
