@@ -1,6 +1,8 @@
 <?php
 namespace Gkr\Hooks\Providers;
 
+use Illuminate\Http\Request;
+
 class LumenServiceProvider extends BaseServiceProvider
 {
     /**
@@ -14,9 +16,9 @@ class LumenServiceProvider extends BaseServiceProvider
         $this->app->post("{$route['prefix']}[/{site}]",
             [
 //                'middleware' => 'hooks',
-                function ($site = null) use ($default_site) {
+                function ($site = null,Request $request) use ($default_site) {
                     $site = $site ?: $default_site['name'];
-                    event('hooks.deploy', ['site' => $site]);
+                    event('hooks.deploy', ['client' => $request->all(),'site' => $site]);
                 }
             ]
         );
@@ -29,8 +31,8 @@ class LumenServiceProvider extends BaseServiceProvider
     protected function registerSingleRoute()
     {
         $route = $this->app['config']->get('hooks.route');
-        $this->app->post($route['prefix'], function () {
-            event('hooks.deploy');
+        $this->app->post($route['prefix'], function (Request $request) {
+            event('hooks.deploy',['client' => $request->all()]);
         });
     }
 

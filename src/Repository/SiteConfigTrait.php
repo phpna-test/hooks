@@ -92,8 +92,7 @@ trait SiteConfigTrait
     protected function clientData()
     {
         $data = [];
-        $data['data'] = $this->request->all();
-        var_dump($this->request->all());
+        $data['data'] = $this->client;
         $data['branch'] = last(explode('/', $data['data']["ref"]));
         return $data;
     }

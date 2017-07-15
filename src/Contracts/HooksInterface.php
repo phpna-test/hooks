@@ -18,6 +18,13 @@ interface HooksInterface
     public function site($site);
 
     /**
+     * Set client input data
+     * @param array $data
+     * @return $this
+     */
+    public function client($data = []);
+
+    /**
      * Instantiate the deploy process class & execute deploy command
      */
     public function deploy();

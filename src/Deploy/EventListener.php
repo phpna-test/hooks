@@ -18,8 +18,9 @@ class EventListener implements ShouldQueue
         $this->tries = $config->get('hooks.queue.tries') ?: $this->tries;
     }
 
-    public function handle($site = null)
+    public function handle($client = [],$site = null)
     {
-        $this->hooks->site($site)->deploy();
+        var_dump($client);
+        $this->hooks->site($site)->client($client)->deploy();
     }
 }

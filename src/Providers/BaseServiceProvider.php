@@ -43,22 +43,22 @@ abstract class BaseServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(LoggerInterface::class, function () {
+        $this->app->singleton('hooks.log', function () {
             $handler = (new StreamHandler(storage_path('logs/hooks.log'), Logger::DEBUG))
                 ->setFormatter(new LineFormatter(null, null, true, true));
             return new Logger('hooks', [$handler]);
         });
-        $this->app->alias(Logger::class, 'hooks.log');
-        $this->app->alias(LoggerInterface::class, 'hooks.log');
-        $this->app->singleton(HooksInterface::class, function ($app) {
+        $this->app->alias('hooks.log',Logger::class);
+        $this->app->alias('hooks.log',LoggerInterface::class);
+        $this->app->singleton('hooks', function ($app) {
             try {
-                return new Hooks($app, new SiteManager($app['config']),$app['request']);
+                return new Hooks($app, new SiteManager($app['config']));
             } catch (ErrorException $e) {
                 $this->app['hooks.log']->error($e->errorMessage());
             }
         });
-        $this->app->alias(HooksInterface::class, Hooks::class);
-        $this->app->alias(HooksInterface::class, 'hooks');
+        $this->app->alias('hooks', Hooks::class);
+        $this->app->alias('hooks',HooksInterface::class);
     }
     /**
      * Register the middleware for web hooks.
