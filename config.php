@@ -15,13 +15,13 @@ return [
         'site' => 'default'
     ],
     'route' => [
-        'prefix' => 'hooks',
+        'prefix' => env('HOOKS_URL','hooks'),
         'name' => 'hooks'
     ],
     'queue' => [
         'connection' => [
             'driver'  => 'sqlite',
-            'database' => base_path('vendor/gkr/hooks/database.sqlite')
+            'database' => base_path('vendor/gkr/hooks/data/database.sqlite')
         ],
         'timeout' => 300,
         'tries' => 3,
@@ -39,11 +39,11 @@ return [
     'scripts' => [
         'normal' => [
             'shell' => 'php',
-            'file' => base_path('vendor/gkr/hooks/src/Code/scripts/normal.php')
+            'file' => base_path('vendor/gkr/hooks/src/Code/Scripts/normal.php')
         ],
         'composer' => [
             'shell' => 'php',
-            'file' => base_path('vendor/gkr/hooks/src/Code/scripts/composer.php')
+            'file' => base_path('vendor/gkr/hooks/src/Code/Scripts/composer.php')
         ]
     ],
     'sites' => [
