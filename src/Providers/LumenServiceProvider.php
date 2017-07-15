@@ -11,7 +11,7 @@ class LumenServiceProvider extends BaseServiceProvider
     {
         $route = $this->app['config']->get('hooks.route');
         $default_site = $this->app['hooks']->manager()->getDefault();
-        $this->app->get("{$route['prefix']}[/{site}]",
+        $this->app->post("{$route['prefix']}[/{site}]",
             [
 //                'middleware' => 'hooks',
                 function ($site = null) use ($default_site) {
@@ -29,7 +29,7 @@ class LumenServiceProvider extends BaseServiceProvider
     protected function registerSingleRoute()
     {
         $route = $this->app['config']->get('hooks.route');
-        $this->app->get($route['prefix'], function () {
+        $this->app->post($route['prefix'], function () {
             event('hooks.deploy');
         });
     }
