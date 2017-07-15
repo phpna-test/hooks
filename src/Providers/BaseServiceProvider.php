@@ -52,7 +52,7 @@ abstract class BaseServiceProvider extends ServiceProvider
         $this->app->alias(LoggerInterface::class, 'hooks.log');
         $this->app->singleton(HooksInterface::class, function ($app) {
             try {
-                return new Hooks($app, new SiteManager($app['config']));
+                return new Hooks($app, new SiteManager($app['config']),$app['request']);
             } catch (ErrorException $e) {
                 $this->app['hooks.log']->error($e->errorMessage());
             }
