@@ -32,7 +32,7 @@ class LumenServiceProvider extends BaseServiceProvider
     {
         $route = $this->app['config']->get('hooks.route');
         $this->app->post($route['prefix'], function (Request $request) {
-            event('hooks.deploy',['client' => $request->all()]);
+            event('hooks.deploy',['client' => $request->input("ref")]);
         });
     }
 

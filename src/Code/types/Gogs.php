@@ -7,14 +7,12 @@ class Gogs extends BaseType implements TokenInterface
 {
     public function generateServerToken()
     {
-        $token = hash_hmac('sha256', $this->config['client']['input'], $this->config['secret'], false);
-        $this->logger->info("token:{$token}");
+        $token = hash_hmac('sha256', file_get_contents("php://input"), $this->config['secret'], false);
         return $token;
     }
 
     public function generateClientToken()
     {
-        $_SERVER['HTTP_X_GOGS_SIGNATURE'] = 'cce0094888f535739030a56202ccf4b91c44898cd4eb4ee4c81d83c6463f780e';
         return $_SERVER['HTTP_X_GOGS_SIGNATURE'];
     }
 }

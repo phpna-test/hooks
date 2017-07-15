@@ -20,7 +20,6 @@ class EventListener implements ShouldQueue
 
     public function handle($client = [],$site = null)
     {
-        var_dump($client);
         $this->hooks->site($site)->client($client)->deploy();
     }
 }

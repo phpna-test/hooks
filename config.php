@@ -39,11 +39,11 @@ return [
     'scripts' => [
         'normal' => [
             'shell' => 'php',
-            'file' => base_path('vendor/gkr/hooks/src/code/scripts/normal.php')
+            'file' => base_path('vendor/gkr/hooks/src/Code/scripts/normal.php')
         ],
         'composer' => [
             'shell' => 'php',
-            'file' => base_path('vendor/gkr/hooks/src/code/scripts/composer.php')
+            'file' => base_path('vendor/gkr/hooks/src/Code/scripts/composer.php')
         ]
     ],
     'sites' => [
